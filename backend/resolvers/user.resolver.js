@@ -3,7 +3,7 @@ import { users } from "../dummyData/data.js";
 const userResolver = {
     Query:{
         //fetch all users
-        users:() =>{
+        users:(_,args,{req, res}) =>{
             return users
         },
         //select user by userId ->from resolver user(userId:ID!):User
