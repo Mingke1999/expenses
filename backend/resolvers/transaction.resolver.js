@@ -26,10 +26,10 @@ const transactionResolver = {
     },
   },
   Mutation:{
-    createTransaction: async(_, args, context) =>{
+    createTransaction: async(_, {input}, context) =>{
         try{
           const newTransaction = new Transaction({
-                ...args,
+                ...input,
                 userId:context.getUser()._id
           })
           await newTransaction.save();
@@ -39,9 +39,9 @@ const transactionResolver = {
            throw new Error(err.message || "Internal Server Error");
         }
     },
-    updateTransaction: async(_, args) =>{
+    updateTransaction: async(_, {input}) =>{
         try{
-          const updateTransaction = await Transaction.findByIdAndUpdate(args.transactionId,args,{new:true});
+          const updateTransaction = await Transaction.findByIdAndUpdate(input.transactionId,input,{new:true});
           return updateTransaction;
         }catch(err){
           console.error("Error updating transactions", err);
