@@ -17,6 +17,7 @@ import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
 dotenv.config()
+configurePassport()
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -50,7 +51,7 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-    '/',
+    '/graphql',
     cors({
         origin:"http://localhost:3000",
         credentials:true
@@ -66,4 +67,4 @@ app.use(
   // Modified server startup
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
   await dbConn()
-  console.log(`🚀 Server ready at http://localhost:4000/`);
+  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
