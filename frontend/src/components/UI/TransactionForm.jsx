@@ -21,7 +21,7 @@ const TransactionForm = () => {
 			location: formData.get("location"),
 			date: formData.get("date"),
 		};
-		console.log("transactionData", transactionData);
+		//console.log("transactionData", transactionData);
 		try{
 			await createTransaction({
 				variables:{

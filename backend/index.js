@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import passport from 'passport';
 import session from 'express-session';
 import ConnectMongoDBSession from 'connect-mongodb-session';
-
+import path from 'path';
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -20,6 +20,7 @@ dotenv.config()
 configurePassport()
 
 const app = express();
+const __dirname = path.resolve();
 const httpServer = http.createServer(app);
 const MongoDBStore = ConnectMongoDBSession(session)
 const store = new MongoDBStore({
@@ -63,7 +64,10 @@ app.use(
       context: async ({ req, res }) => buildContext({ req, res }),
     }),
   );
-  
+  app.use(express.static(path.join(__dirname,"frontend/dist")))
+  app.get("*",(req,res)=>{
+    res.sendFile(path.join(__dirname,"frontend/dist", "index.html"));
+  })
   // Modified server startup
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
   await dbConn()
