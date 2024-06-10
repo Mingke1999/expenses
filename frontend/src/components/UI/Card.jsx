@@ -25,7 +25,7 @@ const Card = ({ transaction }) => {
 	category = category[0]?.toUpperCase() + category.slice(1);
 	const formattedDate = formatDate(date);
 	const [deleteTransaction, {loading}] = useMutation(DELETE_TRANSACTION,{
-		refetchQueries:["GetTransactions"]
+		refetchQueries:["GetTransactions","GetTransactionStatistics"]
 	})
 	const handleDelete = async () =>{
 		try{
@@ -70,11 +70,11 @@ const Card = ({ transaction }) => {
 				</p>
 				<div className='flex justify-between items-center'>
 					<p className='text-xs text-black font-bold'>{formattedDate}</p>
-					<img
+					{/* <img
 						src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
 						className='h-8 w-8 border rounded-full'
 						alt=''
-					/>
+					/> */}
 				</div>
 			</div>
 		</div>

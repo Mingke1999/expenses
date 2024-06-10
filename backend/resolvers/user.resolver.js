@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from 'bcryptjs'
+import Transaction from "../models/transaction.model.js";
 
 const userResolver = {
     Query:{
@@ -14,9 +15,9 @@ const userResolver = {
             }
         },
         //select user by userId ->from resolver user(userId:ID!):User
-        user:async(_, args) =>{
+        user:async(_, {userId}) =>{
            try{
-            const user = await User.findById(args.userId)
+            const user = await User.findById(userId)
             return user;
            }catch(err){
                 console.error("Error in fetching user",err);
@@ -25,12 +26,6 @@ const userResolver = {
         }
     },
     Mutation:{
-        // input SignUpInput{
-        //     username:String!
-        //     name:String!
-        //     password:String!
-        //     gender:String!
-        // }
         signup:async(_,{ input },context) =>{
             try{
                 const {username, name, password, gender} = input
@@ -91,6 +86,16 @@ const userResolver = {
             }
         }
         
+    },
+    User:{
+        transactions:async(parent,_,context)=>{
+            try{
+                const transactions = await Transaction.find({userId:parent._id});
+                return transactions;
+            }catch(error){
+                throw new Error(err.message || "Internal Server Error");
+            }
+        }
     }
 }
 

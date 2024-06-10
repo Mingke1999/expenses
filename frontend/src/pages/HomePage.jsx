@@ -5,30 +5,65 @@ import Cards from "../components/UI/Cards";
 import TransactionForm from "../components/UI/TransactionForm";
 import toast from "react-hot-toast";
 import { MdLogout } from "react-icons/md";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { LOGOUT } from "../graphql/mutations/user.mutation";
+import { GET_TRANS_STATISTICS } from "../graphql/queires/transaction.query";
+import { useEffect, useState } from "react";
+import { GET_AUTH_USER } from "../graphql/queires/user.query";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const HomePage = () => {
-	const chartData = {
-		labels: ["Saving", "Expense", "Investment"],
+	const {data} = useQuery(GET_TRANS_STATISTICS);
+	const {data:authenticatedUser} = useQuery(GET_AUTH_USER);
+	const [logout,{loading, client}] = useMutation(LOGOUT,{
+		refetchQueries:["GetAuthUser"]
+	});
+	//console.log("statistics",data)
+	const [chartData,setChartData] = useState({
+		labels: [],
 		datasets: [
 			{
-				label: "%",
-				data: [13, 8, 3],
-				backgroundColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235)"],
-				borderColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235, 1)"],
+				label: "$",
+				data: [],
+				backgroundColor: [],
+				borderColor: [],
 				borderWidth: 1,
 				borderRadius: 30,
 				spacing: 10,
 				cutout: 130,
 			},
 		],
-	};
-const [logout,{loading, client}] = useMutation(LOGOUT,{
-    refetchQueries:["GetAuthUser"]
-  })
+	});
+	useEffect(()=>{
+		if(data?.cateStatistics){
+			const categories = data.cateStatistics.map((stat)=>stat.category);
+			const totalAmount = data.cateStatistics.map((stat)=>stat.totalAmount);
+			const backgroundColors = [];
+			const borderColors = [];
+			categories.forEach(category=>{
+				if(category === "saving"){
+					backgroundColors.push("rgba(75,192,192)");
+					borderColors.push("rgba(75,192,192)");
+				}else if(category === "expense"){
+					backgroundColors.push("rgba(255,99,132)");
+					borderColors.push("rgba(75,99,132)");
+				}else if(category === "investment"){
+					backgroundColors.push("rgba(54,162,235)");
+					borderColors.push("rgba(54,162,235)");
+				}
+			})
+			setChartData(prev =>({
+				labels : categories,
+				datasets:[{
+					...prev.datasets[0],
+					data:totalAmount,
+					backgroundColor:backgroundColors,
+					borderColor:borderColors
+				}]
+			}))
+		}
+	},[data])
 	const handleLogout = async () => {
 		try{
 			await logout();
@@ -43,11 +78,11 @@ const [logout,{loading, client}] = useMutation(LOGOUT,{
 		<>
 			<div className='flex flex-col gap-6 items-center max-w-7xl mx-auto z-20 relative justify-center'>
 				<div className='flex items-center'>
-					<p className='md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text'>
-						Spend wisely, track wisely
+					<p className='md:text-2xl text-1xl lg:text-2xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text'>
+						这个头像是根据你的用户名生成的全网独一无二的
 					</p>
 					<img
-						src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
+						src={authenticatedUser?.authUser.profilePicture}
 						className='w-11 h-11 rounded-full border cursor-pointer'
 						alt='Avatar'
 					/>

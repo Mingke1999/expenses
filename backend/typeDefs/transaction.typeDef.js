@@ -12,6 +12,11 @@ const transactionTypeDef = `#graphql
     type Query{
         transactions: [Transaction!]
         transaction(transactionId:ID!):Transaction
+        cateStatistics:[CateStatistics!]
+    }
+    type CateStatistics{
+        category:String!
+        totalAmount: Float!
     }
     type Mutation{
         createTransaction(input:CreateTransactionInput!):Transaction

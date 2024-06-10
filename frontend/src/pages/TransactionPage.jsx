@@ -13,7 +13,9 @@ const TransactionPage = () => {
 			id:id
 		}
 	})
-	const [updateTransaction,{loading:loadingUpdate}] = useMutation(UPDATE_TRANSACTION)
+	const [updateTransaction,{loading:loadingUpdate}] = useMutation(UPDATE_TRANSACTION,{
+		refetchQueries:["GetTransactions","GetTransactionStatistics"]
+	})
 	const [formData, setFormData] = useState({
 		description: data?.transaction?.description || "",
 		paymentType: data?.transaction?.paymentType || "",
@@ -22,7 +24,7 @@ const TransactionPage = () => {
 		location: data?.transaction?.location || "",
 		date:data?.transaction?.date || "",
 	});
-
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const amount = parseFloat(formData.amount);
